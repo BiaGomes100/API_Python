@@ -59,7 +59,7 @@ def adicionar_turma():
             jsonify(
                 mensagem = 'Turma cadastrado com sucesso!',
                 dado = turma
-                )
+                ),200
             )
 
 @app.route('/Turma/AtualizarTurma/<int:id>', methods=['PUT'])
@@ -98,7 +98,7 @@ def deletar_turma():
                   jsonify(
                       mensagem = 'erro:',
                      dados = "id vazio"
-            ) 
+            ),404 
            )  
     else:
         for turma in turmas:
@@ -108,7 +108,7 @@ def deletar_turma():
                     jsonify(
                         mensagem= 'Turma excluído com sucesso!',
                         dado = turma
-                    )
+                    ),200
                 )
         return make_response(jsonify(
                     mensagem="Erro: id não encontrada.",
