@@ -45,6 +45,8 @@ def deletar_aluno():
                     dado=aluno
                 )
             )
+        return make_response(jsonify(mensagem='Aluno não encontrado!'), 404)
+
             
 
     
