@@ -1,4 +1,5 @@
-ListaProfessores = [
+dados = {
+   "professores" : [
     {
         "id": 1,
         "nome_do_Professor": "Maria Souza",
@@ -10,47 +11,33 @@ ListaProfessores = [
         "nome_do_Professor": "Carlos Mendes",
         "turma": "2B",
         "Disciplina": "Fisica"
-    },
-    {
-        "id": 3,
-        "nome_do_Professor": "Fernanda Lima",
-        "turma": "1C",
-        "Disciplina": "Matematica"
-    },
-    {
-        "id": 4,
-        "nome_do_Professor": "Roberto Farias",
-        "turma": "2A",
-        "Disciplina": "Historia"
-    },
-    {
-        "id": 5,
-        "nome_do_Professor": "Tatiane Costa",
-        "turma": "3B",
-        "Disciplina": "Quimica"
-    },
-    {
-        "id": 6,
-        "nome_do_Professor": "Paulo Henrique",
-        "turma": "1A",
-        "Disciplina": "Geografia"
-    },
-    {
-        "id": 7,
-        "nome_do_Professor": "Vanessa Souza",
-        "turma": "2C",
-        "Disciplina": "Biologia"
-    },
-    {
-        "id": 8,
-        "nome_do_Professor": "Marcos Vinícius",
-        "turma": "1B",
-        "Disciplina": "Espanhol"
-    },
-    {
-        "id": 9,
-        "nome_do_Professor": "Juliana Prado",
-        "turma": "3C",
-        "Disciplina": "Filosofia"
     }
-]
+   ]
+}
+
+class ProfessorNaoEncontrado(Exception):
+    pass
+
+def professor_por_id(id_professor):
+    lista_professores = dados['professores']
+    for dicionario in lista_professores:
+        if dicionario['id'] == id_professor:
+            return dicionario
+    raise ProfessorNaoEncontrado
+
+def listar_professores():
+    return dados['professores']
+
+def adicionar_professor(professor):
+    dados['professores'].append(professor)
+
+def atualizar_professor(id_professor, novos_dados):
+    professor = professor_por_id(id_professor)
+    professor.update(novos_dados)
+
+def excluir_professor(id_professor):
+    professor = professor_por_id(id_professor)
+    dados['professores'].remove(professor)
+
+def apaga_tudo():
+    dados['professores'] = []
