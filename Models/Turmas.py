@@ -1,5 +1,6 @@
-turmas = [
-    {
+dados ={
+    "turmas": [
+     {
         "id": 1,
         "quantidade_alunos": 25,
         "numero_turma": "3A",
@@ -11,40 +12,33 @@ turmas = [
         "numero_turma": "3B",
         "professor_representante": "Carlos Oliveira"
     },
-    {
-        "id": 3,
-        "quantidade_alunos": 28,
-        "numero_turma": "4A",
-        "professor_representante": "Ana Paula"
-    },
-    {
-        "id": 4,
-        "quantidade_alunos": 22,
-        "numero_turma": "4B",
-        "professor_representante": "José Carlos"
-    },
-    {
-        "id": 5,
-        "quantidade_alunos": 27,
-        "numero_turma": "5A",
-        "professor_representante": "Fernanda Lima"
-    },
-    {
-        "id": 6,
-        "quantidade_alunos": 26,
-        "numero_turma": "5B",
-        "professor_representante": "Ricardo Santos"
-    },
-    {
-        "id": 7,
-        "quantidade_alunos": 24,
-        "numero_turma": "6A",
-        "professor_representante": "Patrícia Costa"
-    },
-    {
-        "id": 8,
-        "quantidade_alunos": 29,
-        "numero_turma": "6B",
-        "professor_representante": "Roberto Almeida"
-    }
-]
+    ]
+}
+
+class TurmaNaoEncontrada(Exception):
+    pass
+
+def turma_por_id(id_turma):
+    lista_turmas = dados['turmas']
+    for dicionario in lista_turmas:
+        if dicionario['id'] == id_turma:
+            return dicionario
+    raise TurmaNaoEncontrada
+
+def listar_turmas():
+    return dados['turmas']
+
+def adicionar_turma(turma):
+    dados['turmas'].append(turma)
+
+def atualizar_turma(id_turma, novos_dados):
+    turma = turma_por_id(id_turma)
+    turma.update(novos_dados)
+
+def excluir_turma(id_turma):
+    turma = turma_por_id(id_turma)
+    dados['turmas'].remove(turma)
+
+
+def apaga_tudo():
+    dados['turmas'] = []
