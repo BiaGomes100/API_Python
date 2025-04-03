@@ -1,77 +1,46 @@
-import sys
-import os
-from flask import Flask, make_response, jsonify, request
+# alunos_routes.py
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from flask import Blueprint, request, jsonify
+from Models.Alunos import AlunoNaoEncontrado, listar_alunos, aluno_por_id, adicionar_aluno, atualizar_aluno, excluir_aluno,apaga_tudo
 
-# Importando modelo
-from Models.Alunos import Lista_Alunos
+alunos_blueprint = Blueprint('alunos', __name__)
 
-app = Flask(__name__)
-app.config['JSON_SORT_KEYS'] = False  # Impede a ordenação automática da resposta JSON
+@alunos_blueprint.route('/alunos', methods=['GET'])
+def get_alunos():
+    return jsonify(listar_alunos())
 
-
-@app.route('/Alunos/BuscarAluno', methods=['GET'])
-def buscarAluno():
+@alunos_blueprint.route('/alunos/<int:id_aluno>', methods=['GET'])
+def get_aluno(id_aluno):
     try:
-        return make_response(
-            jsonify(
-                mensagem='Lista de alunos',
-                dados=Lista_Alunos
-            ), 200
-        )
-    except Exception as e:
-        return make_response(jsonify(erro=str(e)), 500)
+        aluno = aluno_por_id(id_aluno)
+        return jsonify(aluno)
+    except AlunoNaoEncontrado:
+        return jsonify({'message': 'Aluno não encontrado'}), 404
 
+@alunos_blueprint.route('/alunos', methods=['POST'])
+def create_aluno():
+    data = request.json
+    adicionar_aluno(data)
+    return jsonify(data), 201
 
-@app.route('/Alunos/AdicionarAluno', methods=['POST'])
-def adicionar_Aluno():
+@alunos_blueprint.route('/alunos/<int:id_aluno>', methods=['PUT'])
+def update_aluno(id_aluno):
+    data = request.json
     try:
-        aluno = request.json
+        atualizar_aluno(id_aluno, data)
+        return jsonify(aluno_por_id(id_aluno))
+    except AlunoNaoEncontrado:
+        return jsonify({'message': 'Aluno não encontrado'}), 404
 
-        # Verifica se os campos essenciais existem
-        if not aluno or 'id' not in aluno or 'nome' not in aluno:
-            return make_response(jsonify(mensagem="Dados inválidos. O JSON deve conter 'id' e 'nome'."), 400)
-
-        # Verifica se o ID já existe
-        if any(a["id"] == aluno["id"] for a in Lista_Alunos):
-            return make_response(jsonify(mensagem="Já existe um aluno com esse ID!"), 409)
-
-        Lista_Alunos.append(aluno)
-        return make_response(
-            jsonify(
-                mensagem='Aluno cadastrado com sucesso!',
-                dado=aluno
-            ), 201
-        )
-
-    except Exception as e:
-        return make_response(jsonify(erro=str(e)), 500)
-
-
-@app.route('/Alunos/DeletarAlunoPorID', methods=['DELETE'])
-def deletar_aluno():
+@alunos_blueprint.route('/alunos/<int:id_aluno>', methods=['DELETE'])
+def delete_aluno(id_aluno):
     try:
-        alunoParaDeletar = request.json
-
-        if not alunoParaDeletar or 'id' not in alunoParaDeletar:
-            return make_response(jsonify(mensagem="O JSON deve conter o campo 'id'."), 400)
-
-        for aluno in Lista_Alunos:
-            if aluno["id"] == alunoParaDeletar["id"]:
-                Lista_Alunos.remove(aluno)
-                return make_response(
-                    jsonify(
-                        mensagem='Aluno excluído com sucesso!',
-                        dado=aluno
-                    ), 200
-                )
-
-        return make_response(jsonify(mensagem='Aluno não encontrado!'), 404)
-
-    except Exception as e:
-        return make_response(jsonify(erro=str(e)), 500)
-
-
-if __name__ == '__main__':
-    app.run()
+        excluir_aluno(id_aluno)
+        return '', 204
+    except AlunoNaoEncontrado:
+        return jsonify({'message': 'Aluno não encontrado'}), 404
+    
+@alunos_blueprint.route("/alunos/reseta", methods=["POST","DELETE"])
+def reseta():
+    apaga_tudo()
+    return "resetado",200
