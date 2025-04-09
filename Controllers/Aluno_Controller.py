@@ -1,55 +1,46 @@
-# serve para o python entender que API_PYTHON é o diretorio raiz do projeto fazendo ele identificar mais facil as pastas
-import sys
-import os
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+# alunos_routes.py
 
+from flask import Blueprint, request, jsonify
+from Models.Alunos import AlunoNaoEncontrado, listar_alunos, aluno_por_id, adicionar_aluno, atualizar_aluno, excluir_aluno,apaga_tudo
 
-from flask import Flask, make_response,jsonify,request ##importando o Flask
-from Models.Alunos import *
+alunos_blueprint = Blueprint('alunos', __name__)
 
-app = Flask(__name__) ##instanciando o Flask para poder ser usado
-app.config['JSON_SORT_KEYS']= False #faz com que não ordene o respose de AaZ
+@alunos_blueprint.route('/alunos', methods=['GET'])
+def get_alunos():
+    return jsonify(listar_alunos())
 
+@alunos_blueprint.route('/alunos/<int:id_aluno>', methods=['GET'])
+def get_aluno(id_aluno):
+    try:
+        aluno = aluno_por_id(id_aluno)
+        return jsonify(aluno)
+    except AlunoNaoEncontrado:
+        return jsonify({'message': 'Aluno não encontrado'}), 404
 
+@alunos_blueprint.route('/alunos', methods=['POST'])
+def create_aluno():
+    data = request.json
+    adicionar_aluno(data)
+    return jsonify(data), 201
 
-@app.route('/Alunos/BuscarAluno', methods=['GET'])  ##decorator serve para dar uma funcionalidade para a função abaixo, essa por exemplo serve para inicializar a função
-def buscarAluno():
-    return make_response( 
-        jsonify(
-            mensagem = 'Lista de alunos',
-            dados = Lista_Alunos
-            ) #transforma em json bonitinho
-    )
+@alunos_blueprint.route('/alunos/<int:id_aluno>', methods=['PUT'])
+def update_aluno(id_aluno):
+    data = request.json
+    try:
+        atualizar_aluno(id_aluno, data)
+        return jsonify(aluno_por_id(id_aluno))
+    except AlunoNaoEncontrado:
+        return jsonify({'message': 'Aluno não encontrado'}), 404
 
-@app.route('/Alunos/AdicionarAluno', methods=['POST'])
-def adicionar_Aluno():
-    aluno = request.json
-    Lista_Alunos.append(aluno)
-    return make_response(
-        jsonify(
-            mensagem = 'Aluno cadastrado com sucesso!',
-            dado = aluno
-            )
-        )
-
-@app.route('/Alunos/DeletarAlunoPorID', methods=['DELETE'])
-def deletar_aluno():
-    alunoParaDeletar = request.json
+@alunos_blueprint.route('/alunos/<int:id_aluno>', methods=['DELETE'])
+def delete_aluno(id_aluno):
+    try:
+        excluir_aluno(id_aluno)
+        return '', 204
+    except AlunoNaoEncontrado:
+        return jsonify({'message': 'Aluno não encontrado'}), 404
     
-    for aluno in Lista_Alunos:
-        if aluno["id"] == alunoParaDeletar["id"]:
-            Lista_Alunos.remove(aluno)
-            return make_response(
-                jsonify(
-                    mensagem='Aluno excluído com sucesso!',
-                    dado=aluno
-                )
-            )
-        return make_response(jsonify(mensagem='Aluno não encontrado!'), 404)
-
-            
-
-    
-
-
-app.run()
+@alunos_blueprint.route("/alunos/reseta", methods=["POST","DELETE"])
+def reseta():
+    apaga_tudo()
+    return "resetado",200
