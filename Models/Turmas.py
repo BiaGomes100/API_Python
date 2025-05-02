@@ -37,6 +37,7 @@ def listar_turmas():
 
 
 def adicionar_turma(turma_data):
+    turma = Turma.query.get(turma_data['id'])
     nova_turma = Turma(
         nome_turma=turma_data['nome_turma'],
         ano=turma_data['ano'],

@@ -47,14 +47,18 @@ def listar_alunos():
 
 
 def adicionar_aluno(aluno_data):
-    novo_aluno = Aluno(
-        nome_Aluno=aluno_data['nome'],
-        data_nascimento=aluno_data['data_nascimento'],
-        email=aluno_data['email'],
-        telefone=aluno_data.get('telefone')  
-    )
-    db.session.add(novo_aluno)
-    db.session.commit()
+    aluno = Aluno.query.get(aluno_data['id'])
+    if aluno is None:
+        novo_aluno = Aluno(
+            nome_Aluno=aluno_data['nome'],
+            data_nascimento=aluno_data['data_nascimento'],
+            email=aluno_data['email'],
+            telefone=aluno_data.get('telefone')  
+        )
+        db.session.add(novo_aluno)
+        db.session.commit()
+    else:
+        return {"message": "Não é possivel adicionar o mesmo aluno já existente."}
 
 
 def atualizar_aluno(id_aluno, novos_dados):
