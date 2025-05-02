@@ -1,6 +1,6 @@
-import requests
+import requests 
 import unittest
-
+from  config import db
 
 class TestStringMethods(unittest.TestCase):
 

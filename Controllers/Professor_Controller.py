@@ -1,6 +1,6 @@
 
 from flask import Blueprint, request, jsonify
-from Models.Professores import ProfessorNaoEncontrado, listar_professores, professor_por_id, adicionar_professor, atualizar_professor, excluir_professor,apaga_tudo
+from Models.Professores import ProfessorNaoEncontrado, listar_professores, professor_por_id, adicionar_professor, atualizar_professor, excluir_professor
 
 professores_blueprint = Blueprint('professores', __name__)
 
@@ -39,7 +39,3 @@ def delete_professor(id_professor):
     except ProfessorNaoEncontrado:
         return jsonify({'message': 'Professor não encontrado'}), 404
     
-@professores_blueprint.route("/professores/reseta", methods=["POST","DELETE"])
-def reseta():
-    apaga_tudo()
-    return "resetado",200

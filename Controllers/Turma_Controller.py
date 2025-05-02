@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from Models.Turmas import TurmaNaoEncontrada, listar_turmas, turma_por_id, adicionar_turma, atualizar_turma, excluir_turma,apaga_tudo
+from Models.Turmas import TurmaNaoEncontrada, listar_turmas, turma_por_id, adicionar_turma, atualizar_turma, excluir_turma
 
 turma_blueprint = Blueprint('turma', __name__)
 
@@ -38,7 +38,3 @@ def delete_turma(id_turma):
     except TurmaNaoEncontrada:
         return jsonify({'message': 'turma não encontrada'}), 404
 
-@turma_blueprint.route("/turma/reseta", methods=["POST","DELETE"])
-def reseta():
-    apaga_tudo()
-    return "resetado",200
