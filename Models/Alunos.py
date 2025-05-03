@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, datetime
 from config import db
 
 class Aluno(db.Model):
@@ -20,7 +20,7 @@ class Aluno(db.Model):
             (hoje.month, hoje.day) < (self.data_nascimento.month, self.data_nascimento.day)
         )
 
-    def to_dict(self):
+    def dict(self):
         return {
             'id': self.id,
             'nome': self.nome_Aluno,
@@ -38,27 +38,33 @@ def aluno_por_id(id_aluno):
     aluno = Aluno.query.get(id_aluno)
     if not aluno:
         raise AlunoNaoEncontrado
-    return aluno.to_dict()
+    return aluno.dict()
 
 
 def listar_alunos():
     alunos = Aluno.query.all()
-    return [aluno.to_dict() for aluno in alunos]
+    return [aluno.dict() for aluno in alunos]
 
 
-def adicionar_aluno(aluno_data):
-    aluno = Aluno.query.get(aluno_data['id'])
-    if aluno is None:
-        novo_aluno = Aluno(
-            nome_Aluno=aluno_data['nome'],
-            data_nascimento=aluno_data['data_nascimento'],
-            email=aluno_data['email'],
-            telefone=aluno_data.get('telefone')  
-        )
-        db.session.add(novo_aluno)
-        db.session.commit()
-    else:
-        return {"message": "Não é possivel adicionar o mesmo aluno já existente."}
+def adicionar_aluno(aluno_dado):
+
+    #verificando se os campos está sendo passado corretamente
+    campos_obrigatorios = ['nome', 'data_nascimento', 'email', 'telefone']
+    for campo in campos_obrigatorios:
+        if campo not in aluno_dado:
+            return {"message": f"Campo obrigatório faltando: {campo}"}, 400
+            
+    novo_aluno = Aluno(
+        nome_Aluno=aluno_dado['nome'],
+        data_nascimento=datetime.strptime(aluno_dado['data_nascimento'], "%Y-%m-%d").date(),
+        email=aluno_dado['email'],
+        telefone=aluno_dado['telefone']
+    )
+
+    db.session.add(novo_aluno)
+    db.session.commit()
+    return {"message": "Aluno adicionado com sucesso!"}, 201
+    
 
 
 def atualizar_aluno(id_aluno, novos_dados):

@@ -38,20 +38,16 @@ def listar_professores():
 
 
 def adicionar_professor(professor_dado):
-    professor = Professor.query.get(professor_dado['id'])
-    if professor is None:
-        novo_prof = Professor(
-            id=professor_dado['id'],
-            nome_do_Professor=professor_dado['nome_do_Professor'],
-            turma=professor['turma'],
-            Disciplina=professor_dado['Disciplina']
-        )
-        db.session.add(novo_prof)
-        db.session.commit()
-    else: 
-        return {"message": "Não é possivel adicionar o mesmo Professor já existente."}
-
-
+    novo_prof = Professor(
+        id=professor_dado['id'],
+        nome_do_Professor=professor_dado['nome_do_Professor'],
+        turma=professor_dado['turma'],
+        Disciplina=professor_dado['Disciplina']
+    )
+    db.session.add(novo_prof)
+    db.session.commit()
+   
+   
 def atualizar_professor(id_professor, novos_dados):
     professor = Professor.query.get(id_professor)
     if not professor:

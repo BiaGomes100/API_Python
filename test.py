@@ -1,6 +1,5 @@
 import requests 
 import unittest
-from  config import db
 
 class TestStringMethods(unittest.TestCase):
 
@@ -27,8 +26,8 @@ class TestStringMethods(unittest.TestCase):
 
     def test_001_adiciona_alunos(self):
         #criar dois alunos (usando post na url /alunos)
-        r = requests.post('http://127.0.0.1:8000/api/alunos',json={'nome':'fernando','id':1})
-        r = requests.post('http://127.0.0.1:8000/api/alunos',json={'nome':'roberto','id':2})
+        r = requests.post('http://127.0.0.1:8000/api/alunos',json={'nome':'fernando', 'data_nascimento':'2005-03-15', 'email':'fernando@teste.com', 'telefone':'87654321'})
+        r = requests.post('http://127.0.0.1:8000/api/alunos',json={'nome':'roberto','data_nascimento':'2005-03-15', 'email':'roberto@teste.com', 'telefone':'87654322'})
         
         #pego a lista de alunos (do mesmo jeito que no teste 0)
         r_lista = requests.get('http://127.0.0.1:8000/api/alunos')
@@ -53,7 +52,7 @@ class TestStringMethods(unittest.TestCase):
 
     def test_002_aluno_por_id(self):
         #cria um aluno 'mario', com id 20
-        r = requests.post('http://127.0.0.1:8000/api/alunos',json={'nome':'mario','id':20})
+        r = requests.post('http://127.0.0.1:8000/api/alunos',json={'id': 20,'nome':'mario','data_nascimento':'2005-03-15', 'email':'mario@teste.com', 'telefone':'87654323'})
 
         #consulta a url /alunos/20, pra ver se o aluno está lá
         resposta = requests.get('http://127.0.0.1:8000/api/alunos/20')
