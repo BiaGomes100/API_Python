@@ -37,7 +37,6 @@ def listar_turmas():
 
 
 def adicionar_turma(turma_data):
-    turma = Turma.query.get(turma_data['id'])
     nova_turma = Turma(
         nome_turma=turma_data['nome_turma'],
         ano=turma_data['ano'],
@@ -45,17 +44,22 @@ def adicionar_turma(turma_data):
     )
     db.session.add(nova_turma)
     db.session.commit()
+    return {"message": "professor adicionado com sucesso!", "body": nova_turma.id}, 201
 
 
 def atualizar_turma(id_turma, novos_dados):
     turma = Turma.query.get(id_turma)
-    if not turma:
-        raise TurmaNaoEncontrada
-    turma.nome_turma = novos_dados['nome_turma']
-    turma.ano = novos_dados['ano']
-    turma.turno = novos_dados['turno']
-    db.session.commit()
+    if turma is None:
+        raise TurmaNaoEncontrada()
 
+    if 'nome_turma' in novos_dados:
+        turma.nome_turma = novos_dados['nome_turma']
+    if 'ano' in novos_dados:
+        turma.ano = novos_dados['ano']
+    if 'turno' in novos_dados:
+        turma.turno = novos_dados['turno']
+
+    db.session.commit()
 
 def excluir_turma(id_turma):
     turma = Turma.query.get(id_turma)

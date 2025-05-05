@@ -18,8 +18,8 @@ def get_turma(id_turma):
 @turma_blueprint.route('/turma', methods=['POST'])
 def create_turma():
     data = request.json
-    adicionar_turma(data)
-    return jsonify(data), 201
+    response = adicionar_turma(data)
+    return jsonify(response), 201
 
 @turma_blueprint.route('/turma/<int:id_turma>', methods=['PUT'])
 def update_turma(id_turma):

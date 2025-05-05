@@ -63,24 +63,34 @@ def adicionar_aluno(aluno_dado):
 
     db.session.add(novo_aluno)
     db.session.commit()
-    return {"message": "Aluno adicionado com sucesso!"}, 201
+    return {"message": "Aluno adicionado com sucesso!", "body": novo_aluno.id}, 201
     
 
 
-def atualizar_aluno(id_aluno, novos_dados):
-    aluno = Aluno.query.get(id_aluno)
-    if not aluno:
-        raise AlunoNaoEncontrado
-    aluno.nome_Aluno = novos_dados['nome']
-    aluno.data_nascimento = novos_dados['data_nascimento']
-    aluno.email = novos_dados['email']
-    aluno.telefone = novos_dados.get('telefone')
+def atualizar_aluno(id, novos_dados):
+    aluno = Aluno.query.get(id)
+    if aluno is None:
+        raise AlunoNaoEncontrado()
+
+    if 'nome' in novos_dados:
+        aluno.nome_Aluno = novos_dados['nome']
+    if 'data_nascimento' in novos_dados:
+        aluno.data_nascimento = datetime.strptime(novos_dados['data_nascimento'], "%Y-%m-%d").date()
+    if 'email' in novos_dados:
+        aluno.email = novos_dados['email']
+    if 'telefone' in novos_dados:
+        aluno.telefone = novos_dados['telefone']
+
     db.session.commit()
 
 
-def excluir_aluno(id_aluno):
-    aluno = Aluno.query.get(id_aluno)
-    if not aluno:
-        raise AlunoNaoEncontrado
+def excluir_aluno(id):
+    aluno = Aluno.query.get(id)
+    if aluno is None:
+        raise AlunoNaoEncontrado()
     db.session.delete(aluno)
+    db.session.commit()
+
+def apaga_tudo():
+    db.session.query(Aluno).delete()
     db.session.commit()

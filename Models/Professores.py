@@ -2,22 +2,21 @@ from config import db
 
 class Professor(db.Model): 
     id = db.Column(db.Integer, primary_key=True)
-    nome_Professor = db.Column(db.String(100), nullable=False)
+    nome_professor = db.Column(db.String(100), nullable=False)
     turma = db.Column(db.String(10), nullable=False)
-    Disciplina = db.Column(db.String(50), nullable=False)
+    disciplina = db.Column(db.String(50), nullable=False)
 
-    def _init_(self, id, nome_do_Professor, turma, Disciplina):
-        self.id = id
-        self.nome_do_Professor = nome_do_Professor
+    def _init_(self, nome_professor, turma, disciplina):
+        self.nome_professor = nome_professor
         self.turma = turma
-        self.Disciplina = Disciplina
+        self.disciplinaisciplina = disciplina
 
     def to_dict(self):
         return {
-            "id": self.id,
-            "nome_do_Professor": self.nome_do_Professor,
+            'id': self.id,
+            "nome_professor": self.nome_professor,
             "turma": self.turma,
-            "Disciplina": self.Disciplina
+            "disciplina": self.disciplina
         }
 
 
@@ -39,22 +38,27 @@ def listar_professores():
 
 def adicionar_professor(professor_dado):
     novo_prof = Professor(
-        id=professor_dado['id'],
-        nome_do_Professor=professor_dado['nome_do_Professor'],
+        nome_professor=professor_dado['nome_professor'],
         turma=professor_dado['turma'],
-        Disciplina=professor_dado['Disciplina']
+        disciplina=professor_dado['disciplina']
     )
     db.session.add(novo_prof)
     db.session.commit()
+    return {"message": "professor adicionado com sucesso!", "body": novo_prof.id}, 201
    
    
 def atualizar_professor(id_professor, novos_dados):
     professor = Professor.query.get(id_professor)
     if not professor:
         raise ProfessorNaoEncontrado
-    professor.nome_do_Professor = novos_dados['nome_do_Professor']
-    professor.turma = novos_dados['turma']
-    professor.Disciplina = novos_dados['Disciplina']
+
+    if 'nome_professor' in novos_dados:
+        professor.nome_professor = novos_dados['nome_professor']
+    if 'turma' in novos_dados:
+        professor.turma = novos_dados['turma']
+    if 'disciplina' in novos_dados:
+        professor.disciplina = novos_dados['disciplina']
+
     db.session.commit()
 
 
@@ -65,3 +69,7 @@ def excluir_professor(id_professor):
     db.session.delete(professor)
     db.session.commit()
 
+
+def apaga_tudo():
+    db.session.query(Professor).delete()
+    db.session.commit()
