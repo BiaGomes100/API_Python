@@ -3,13 +3,13 @@ from config import db
 
 class Aluno(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    nome_Aluno = db.Column(db.String(100), nullable=False)
+    nome = db.Column(db.String(100), nullable=False) 
     data_nascimento = db.Column(db.Date, nullable=False)
     email = db.Column(db.String(100), nullable=False, unique=True)
     telefone = db.Column(db.String(20), nullable=True)
 
-    def __init__(self, nome_Aluno , data_nascimento , email , telefone):
-        self.nome_Aluno = nome_Aluno
+    def __init__(self, nome, data_nascimento, email, telefone):
+        self.nome = nome
         self.data_nascimento = data_nascimento
         self.email = email
         self.telefone = telefone
@@ -20,10 +20,10 @@ class Aluno(db.Model):
             (hoje.month, hoje.day) < (self.data_nascimento.month, self.data_nascimento.day)
         )
 
-    def dict(self):
+    def to_dict(self):
         return {
             'id': self.id,
-            'nome': self.nome_Aluno,
+            'nome': self.nome,
             'data_nascimento': self.data_nascimento.isoformat(),
             'idade': self.calcular_idade(),
             'email': self.email,
@@ -38,27 +38,28 @@ def aluno_por_id(id_aluno):
     aluno = Aluno.query.get(id_aluno)
     if not aluno:
         raise AlunoNaoEncontrado
-    return aluno.dict()
+    return aluno.to_dict()
 
 
 def listar_alunos():
     alunos = Aluno.query.all()
-    return [aluno.dict() for aluno in alunos]
+    return [aluno.to_dict() for aluno in alunos]
 
 
 def adicionar_aluno(aluno_dado):
-
-    #verificando se os campos está sendo passado corretamente
-    campos_obrigatorios = ['nome', 'data_nascimento', 'email', 'telefone']
+    campos_obrigatorios = ['nome', 'data_nascimento', 'email']
     for campo in campos_obrigatorios:
         if campo not in aluno_dado:
             return {"message": f"Campo obrigatório faltando: {campo}"}, 400
-            
+
+    if Aluno.query.filter_by(email=aluno_dado['email']).first():
+        return {"message": "Email já cadastrado."}, 400
+
     novo_aluno = Aluno(
-        nome_Aluno=aluno_dado['nome'],
+        nome=aluno_dado['nome'],
         data_nascimento=datetime.strptime(aluno_dado['data_nascimento'], "%Y-%m-%d").date(),
         email=aluno_dado['email'],
-        telefone=aluno_dado['telefone']
+        telefone=aluno_dado.get('telefone')
     )
 
     db.session.add(novo_aluno)
