@@ -1,7 +1,8 @@
 # alunos_routes.py
 
 from flask import Blueprint, request, jsonify
-from Models.Alunos import AlunoNaoEncontrado, listar_alunos, aluno_por_id, adicionar_aluno, atualizar_aluno, excluir_aluno,apaga_tudo
+from Models.Alunos import AlunoNaoEncontrado, listar_alunos, aluno_por_id, adicionar_aluno, atualizar_aluno, excluir_aluno, apaga_tudo
+
 
 alunos_blueprint = Blueprint('alunos', __name__)
 
@@ -20,8 +21,8 @@ def get_aluno(id_aluno):
 @alunos_blueprint.route('/alunos', methods=['POST'])
 def create_aluno():
     data = request.json
-    adicionar_aluno(data)
-    return jsonify(data), 201
+    response = adicionar_aluno(data)
+    return jsonify(response), 201
 
 @alunos_blueprint.route('/alunos/<int:id_aluno>', methods=['PUT'])
 def update_aluno(id_aluno):
@@ -39,7 +40,7 @@ def delete_aluno(id_aluno):
         return '', 204
     except AlunoNaoEncontrado:
         return jsonify({'message': 'Aluno não encontrado'}), 404
-    
+
 @alunos_blueprint.route("/alunos/reseta", methods=["POST","DELETE"])
 def reseta():
     apaga_tudo()
