@@ -1,6 +1,6 @@
 
 from flask import Blueprint, request, jsonify
-from Models.Professores import ProfessorNaoEncontrado, listar_professores, professor_por_id, adicionar_professor, atualizar_professor, excluir_professor,apaga_tudo
+from Models.Professores import ProfessorNaoEncontrado, listar_professores, professor_por_id, adicionar_professor, atualizar_professor, excluir_professor, apaga_tudo
 
 professores_blueprint = Blueprint('professores', __name__)
 
@@ -19,8 +19,8 @@ def get_professor(id_professor):
 @professores_blueprint.route('/professores', methods=['POST'])
 def create_professor():
     data = request.json
-    adicionar_professor(data)
-    return jsonify(data), 201
+    response = adicionar_professor(data)
+    return jsonify(response), 201
 
 @professores_blueprint.route('/professores/<int:id_professor>', methods=['PUT'])
 def update_professor(id_professor):
@@ -38,7 +38,8 @@ def delete_professor(id_professor):
         return '', 204
     except ProfessorNaoEncontrado:
         return jsonify({'message': 'Professor não encontrado'}), 404
-    
+ 
+
 @professores_blueprint.route("/professores/reseta", methods=["POST","DELETE"])
 def reseta():
     apaga_tudo()
