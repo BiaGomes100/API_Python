@@ -26,8 +26,8 @@ class TestStringMethods(unittest.TestCase):
 
     def test_001_adiciona_alunos(self):
         #criar dois alunos (usando post na url /alunos)
-        r = requests.post('http://127.0.0.1:8000/api/alunos',json={'nome':'fernando', 'data_nascimento':'2005-03-15', 'email':'fernando@teste.com', 'telefone':'87654321'})
-        r = requests.post('http://127.0.0.1:8000/api/alunos',json={'nome':'roberto','data_nascimento':'2005-03-15', 'email':'roberto@teste.com', 'telefone':'87654322'})
+        r = requests.post('http://127.0.0.1:8000/api/alunos',json={'nome_Aluno':'fernando', 'data_nascimento':'2005-03-15', 'email':'fernando123@teste.com', 'telefone':'87654321'})
+        r = requests.post('http://127.0.0.1:8000/api/alunos',json={'nome_Aluno':'roberto','data_nascimento':'2005-03-15', 'email':'robert123o@teste.com', 'telefone':'87654322'})
         
         #pego a lista de alunos (do mesmo jeito que no teste 0)
         r_lista = requests.get('http://127.0.0.1:8000/api/alunos')
@@ -39,9 +39,9 @@ class TestStringMethods(unittest.TestCase):
         achei_fernando = False
         achei_roberto = False
         for aluno in lista_retornada:
-            if aluno['nome'] == 'fernando':
+            if aluno['nome_Aluno'] == 'fernando':
                 achei_fernando = True
-            if aluno['nome'] == 'roberto':
+            if aluno['nome_Aluno'] == 'roberto':
                 achei_roberto = True
         
         #se algum desses 'achei' nao for True, dou uma falha
@@ -52,7 +52,7 @@ class TestStringMethods(unittest.TestCase):
 
     def test_002_aluno_por_id(self):
         #cria um aluno 'mario', com id 20
-        r = requests.post('http://127.0.0.1:8000/api/alunos',json={'nome':'bia','data_nascimento':'2005-03-15', 'email':'biadsgsdl@teste.com', 'telefone':'87654323'})
+        r = requests.post('http://127.0.0.1:8000/api/alunos',json={'nome_Aluno':'bia','data_nascimento':'2005-03-15', 'email':'1213sadasdsa@teste.com', 'telefone':'87654323'})
 
          # captura o ID do aluno criado
         aluno_criado = r.json()
@@ -64,9 +64,9 @@ class TestStringMethods(unittest.TestCase):
         resposta = requests.get(f'http://127.0.0.1:8000/api/alunos/{id_criado}')
         dict_retornado = resposta.json() #pego o dicionario retornado
         self.assertEqual(type(dict_retornado),dict)
-        self.assertIn('nome',dict_retornado)#o dicionario dict_retornado, que veio do servidor, 
-        #tem que ter a chave nome
-        self.assertEqual(dict_retornado['nome'],'bia') # no dic, o nome tem que ser o 
+        self.assertIn('nome_Aluno',dict_retornado)#o dicionario dict_retornado, que veio do servidor, 
+        #tem que ter a chave nome_Aluno
+        self.assertEqual(dict_retornado['nome_Aluno'],'bia') # no dic, o nome_Aluno tem que ser o 
                                                    # que eu mandei
                                                    # tem que ser bia
      
@@ -75,7 +75,7 @@ class TestStringMethods(unittest.TestCase):
     def test_003_reseta(self):
     # Cria um aluno
         r = requests.post('http://127.0.0.1:8000/api/alunos', json={
-            'nome': 'cicero',
+            'nome_Aluno': 'cicero',
             'data_nascimento': '2005-03-15',
             'email': 'cicerow@teste.com',
             'telefone': '87654324'
@@ -113,19 +113,19 @@ class TestStringMethods(unittest.TestCase):
 
         # Crio 3 alunos
         r1 = requests.post('http://127.0.0.1:8000/api/alunos', json={
-            'nome': 'cicero',
+            'nome_Aluno': 'cicero',
             'data_nascimento': '2005-03-15',
             'email': 'cicero@teste.com',
             'telefone': '123456789'
         })
         r2 = requests.post('http://127.0.0.1:8000/api/alunos', json={
-            'nome': 'lucas',
+            'nome_Aluno': 'lucas',
             'data_nascimento': '2005-03-15',
             'email': 'lucas@teste.com',
             'telefone': '123456788'
         })
         r3 = requests.post('http://127.0.0.1:8000/api/alunos', json={
-            'nome': 'marta',
+            'nome_Aluno': 'marta',
             'data_nascimento': '2005-03-15',
             'email': 'marta@teste.com',
             'telefone': '123456787'
@@ -149,12 +149,12 @@ class TestStringMethods(unittest.TestCase):
         self.assertEqual(len(lista_retornada2), 2)
 
         # Verifico se os alunos restantes são os corretos
-        nomes_restantes = [aluno['nome'] for aluno in lista_retornada2]
-        self.assertIn('cicero', nomes_restantes)
-        self.assertIn('marta', nomes_restantes)
+        nome_Alunos_restantes = [aluno['nome_Aluno'] for aluno in lista_retornada2]
+        self.assertIn('cicero', nome_Alunos_restantes)
+        self.assertIn('marta', nome_Alunos_restantes)
 
     #cria um usuário, depois usa o verbo PUT
-    #para alterar o nome do usuário
+    #para alterar o nome_Aluno do usuário
     def test_005_edita(self):
         #resetei
         r_reset = requests.post('http://127.0.0.1:8000/api/alunos/reseta')
@@ -162,7 +162,7 @@ class TestStringMethods(unittest.TestCase):
         self.assertEqual(r_reset.status_code,200)
 
         #criei um aluno
-        r = requests.post('http://127.0.0.1:8000/api/alunos',json={'nome':'fernando', 'data_nascimento':'2005-03-15', 'email':'fernando@teste.com', 'telefone':'87654321'})
+        r = requests.post('http://127.0.0.1:8000/api/alunos',json={'nome_Aluno':'fernando', 'data_nascimento':'2005-03-15', 'email':'fernando@teste.com', 'telefone':'87654321'})
         #e peguei o dicionario dele
 
         aluno_criado = r.json()
@@ -170,15 +170,15 @@ class TestStringMethods(unittest.TestCase):
         id_criado = aluno_criado[0]['body']  # pega o ID do aluno criado
 
         r_antes = requests.get(f'http://127.0.0.1:8000/api/alunos/{id_criado}')
-        #o nome enviado foi lucas, o nome recebido tb
-        self.assertEqual(r_antes.json()['nome'],'fernando')
+        #o nome_Aluno enviado foi lucas, o nome_Aluno recebido tb
+        self.assertEqual(r_antes.json()['nome_Aluno'],'fernando')
         #vou editar. Vou mandar um novo dicionario p/ corrigir o dicionario
         #para isso, uso o verbo PUT
-        requests.put(f'http://127.0.0.1:8000/api/alunos/{id_criado}', json={'nome':'bia','data_nascimento':'2005-03-15', 'email':'biadsgsdk@teste.com', 'telefone':'87654323'})
+        requests.put(f'http://127.0.0.1:8000/api/alunos/{id_criado}', json={'nome_Aluno':'bia','data_nascimento':'2005-03-15', 'email':'biadsgsdk@teste.com', 'telefone':'87654323'})
         #pego o novo dicionario do aluno 28
         r_depois = requests.get(f'http://127.0.0.1:8000/api/alunos/{id_criado}')
-        #agora o nome deve ser lucas mendes
-        self.assertEqual(r_depois.json()['nome'],'bia')
+        #agora o nome_Aluno deve ser lucas mendes
+        self.assertEqual(r_depois.json()['nome_Aluno'],'bia')
         #mas o id nao mudou
         self.assertEqual(r_depois.json()['id'],id_criado)
         
@@ -209,7 +209,7 @@ class TestStringMethods(unittest.TestCase):
         dict_retornado = resposta.json() #pego o dicionario retornado
         self.assertEqual(type(dict_retornado),dict)
         self.assertIn('nome_professor',dict_retornado)#o dicionario dict_retornado, que veio do servidor, 
-        #tem que ter a chave nome
+        #tem que ter a chave nome_Aluno
         self.assertEqual(dict_retornado['nome_professor'],'biago')
 
         if r.status_code == 404:

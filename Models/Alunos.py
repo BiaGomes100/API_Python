@@ -3,18 +3,18 @@ from config import db
 
 class Aluno(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    nome = db.Column(db.String(100), nullable=False) 
+    nome_Aluno = db.Column(db.String(100), nullable=False) 
     data_nascimento = db.Column(db.Date, nullable=False)
     email = db.Column(db.String(100), nullable=False, unique=True)
     telefone = db.Column(db.String(20), nullable=True)
 
-    def __init__(self, nome, data_nascimento, email, telefone):
-        self.nome = nome
+    def __init__(self, nome_Aluno, data_nascimento, email, telefone):
+        self.nome_Aluno = nome_Aluno
         self.data_nascimento = data_nascimento
         self.email = email
         self.telefone = telefone
 
-    def calcular_idade(self):
+    def calcular_idade(self): 
         hoje = date.today()
         return hoje.year - self.data_nascimento.year - (
             (hoje.month, hoje.day) < (self.data_nascimento.month, self.data_nascimento.day)
@@ -23,9 +23,9 @@ class Aluno(db.Model):
     def to_dict(self):
         return {
             'id': self.id,
-            'nome': self.nome,
-            'data_nascimento': self.data_nascimento.isoformat(),
-            'idade': self.calcular_idade(),
+            'nome_Aluno': self.nome_Aluno,
+            'data_nascimento': self.data_nascimento.isoformat() if self.data_nascimento else None,
+            'idade': self.calcular_idade() if self.data_nascimento else None,
             'email': self.email,
             'telefone': self.telefone
         }
@@ -42,12 +42,14 @@ def aluno_por_id(id_aluno):
 
 
 def listar_alunos():
-    alunos = Aluno.query.all()
-    return [aluno.to_dict() for aluno in alunos]
-
+    try:
+        alunos = Aluno.query.all()
+        return [aluno.to_dict() for aluno in alunos]  # Supondo que você tenha um método to_dict
+    except Exception as e:
+        return {"message": f"Erro ao listar alunos: {str(e)}"}, 500
 
 def adicionar_aluno(aluno_dado):
-    campos_obrigatorios = ['nome', 'data_nascimento', 'email']
+    campos_obrigatorios = ['nome_Aluno', 'data_nascimento', 'email']
     for campo in campos_obrigatorios:
         if campo not in aluno_dado:
             return {"message": f"Campo obrigatório faltando: {campo}"}, 400
@@ -56,7 +58,7 @@ def adicionar_aluno(aluno_dado):
         return {"message": "Email já cadastrado."}, 400
 
     novo_aluno = Aluno(
-        nome=aluno_dado['nome'],
+        nome_Aluno=aluno_dado['nome_Aluno'],
         data_nascimento=datetime.strptime(aluno_dado['data_nascimento'], "%Y-%m-%d").date(),
         email=aluno_dado['email'],
         telefone=aluno_dado.get('telefone')
@@ -73,8 +75,8 @@ def atualizar_aluno(id, novos_dados):
     if aluno is None:
         raise AlunoNaoEncontrado()
 
-    if 'nome' in novos_dados:
-        aluno.nome_Aluno = novos_dados['nome']
+    if 'nome_Aluno' in novos_dados:
+        aluno.nome_Aluno = novos_dados['nome_Aluno']
     if 'data_nascimento' in novos_dados:
         aluno.data_nascimento = datetime.strptime(novos_dados['data_nascimento'], "%Y-%m-%d").date()
     if 'email' in novos_dados:
